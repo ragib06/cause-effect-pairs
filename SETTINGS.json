@@ -1,0 +1,9 @@
+{
+    "train_pairs_path": "data/CEfinal_train_text/CEfinal_train_pairs.csv",
+    "train_target_path": "data/CEfinal_train_text/CEfinal_train_target.csv",
+    "train_info_path": "data/CEfinal_train_text/CEfinal_train_publicinfo.csv",
+    "valid_pairs_path": "data/CEfinal_valid_text/CEfinal_valid_pairs.csv",
+    "valid_info_path": "data/CEfinal_valid_text/CEfinal_valid_publicinfo.csv",
+    "model_path": "models/basic_python_benchmark.pickle",
+    "submission_path": "submissions/basic_python_benchmark.csv"
+}
