@@ -16,13 +16,13 @@ def parse_dataframe(df):
     df = df.applymap(parse_cell)
     return df
 
-def read_train_pairs():
+def read_train_pairs(num_rows = None):
     train_path = get_paths()["train_pairs_path"]
-    return parse_dataframe(pd.read_csv(train_path, index_col="SampleID"))
+    return parse_dataframe(pd.read_csv(train_path, index_col="SampleID", nrows = num_rows))
 
-def read_train_target():
+def read_train_target(num_rows = None):
     path = get_paths()["train_target_path"]
-    df = pd.read_csv(path, index_col="SampleID")
+    df = pd.read_csv(path, index_col="SampleID", nrows = num_rows)
     df = df.rename(columns = dict(zip(df.columns, ["Target", "Details"])))
     return df
 

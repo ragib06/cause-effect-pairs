@@ -1,5 +1,7 @@
 import numpy as np
 from sklearn.base import BaseEstimator
+from sklearn import metrics
+from sklearn.metrics.cluster import normalized_mutual_info_score
 from scipy.special import psi
 from scipy.stats.stats import pearsonr
 
@@ -55,6 +57,9 @@ def normalized_entropy(x):
     hx = hx / (len(x) - 1) + psi(len(x)) - psi(1);
 
     return hx
+
+def normalized_mutual_information(x, y):
+    return metrics.mutual_info_score(x, y)
 
 def entropy_difference(x, y):
     return normalized_entropy(x) - normalized_entropy(y)
