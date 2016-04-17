@@ -1,6 +1,7 @@
 import data_io
 import numpy as np
 import pickle
+import sys, getopt
 
 def historic():
     print("Calculating correlations")
@@ -16,18 +17,30 @@ def historic():
     scores = correlations * causal_relations
 
 def main():
-    print("Reading the valid pairs") 
-    valid = data_io.read_valid_pairs()
+
+    filename = None
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], "f:")
+    except getopt.GetoptError as err:
+        print str(err)
+        sys.exit(2)
+
+    for o, a in opts:
+        if o == "-f":
+            filename = a
+
+    print("Reading the test pairs")
+    valid = data_io.read_test_pairs()
 
     print("Loading the classifier")
     classifier = data_io.load_model()
 
-    print("Making predictions") 
+    print("Making predictions")
     predictions = classifier.predict(valid)
     predictions = predictions.flatten()
 
     print("Writing predictions to file")
-    data_io.write_submission(predictions)
+    data_io.write_submission(predictions, filename)
 
 if __name__=="__main__":
     main()

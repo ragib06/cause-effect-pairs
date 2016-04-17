@@ -30,12 +30,12 @@ def read_train_info():
     path = get_paths()["train_info_path"]
     return pd.read_csv(path, index_col="SampleID")
 
-def read_valid_pairs():
-    valid_path = get_paths()["valid_pairs_path"]
+def read_test_pairs():
+    valid_path = get_paths()["test_pairs_path"]
     return parse_dataframe(pd.read_csv(valid_path, index_col="SampleID"))
 
-def read_valid_info():
-    path = get_paths()["valid_info_path"]
+def read_test_info():
+    path = get_paths()["test_info_path"]
     return pd.read_csv(path, index_col="SampleID")
 
 def read_solution():
@@ -54,10 +54,13 @@ def read_submission():
     submission_path = get_paths()["submission_path"]
     return pd.read_csv(submission_path, index_col="SampleID")
 
-def write_submission(predictions):
+def write_submission(predictions, filename=None):
     submission_path = get_paths()["submission_path"]
+    if filename is not None:
+        submission_path = '/'.join(submission_path.split('/')[:-1]) + '/' + filename
+    print 'writing submission to ' + submission_path
     writer = csv.writer(open(submission_path, "w"), lineterminator="\n")
-    valid = read_valid_pairs()
-    rows = [x for x in zip(valid.index, predictions)]
+    test = read_test_pairs()
+    rows = [x for x in zip(test.index, predictions)]
     writer.writerow(("SampleID", "Target"))
     writer.writerows(rows)

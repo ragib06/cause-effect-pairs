@@ -9,6 +9,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.svm import LinearSVC
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.cross_validation import KFold
+from sklearn.cross_validation import StratifiedKFold
 import sys, getopt
 
 def feature_extractor():
@@ -20,8 +21,8 @@ def feature_extractor():
                 ('B: Normalized Entropy', 'B', f.SimpleTransform(transformer=f.normalized_entropy)),
                 ('Pearson R', ['A','B'], f.MultiColumnTransform(f.correlation)),
                 ('Pearson R Magnitude', ['A','B'], f.MultiColumnTransform(f.correlation_magnitude)),
-                ('Entropy Difference', ['A','B'], f.MultiColumnTransform(f.entropy_difference))#,
-                # ('Mutual Information', ['A', 'B'], f.MultiColumnTransform(transformer=f.normalized_mutual_information)),
+                ('Entropy Difference', ['A','B'], f.MultiColumnTransform(f.entropy_difference)),
+                ('Mutual Information', ['A', 'B'], f.MultiColumnTransform(transformer=f.normalized_mutual_information))
                 ]
     combined = f.FeatureMapper(features)
     return combined
@@ -43,7 +44,8 @@ def crossvalidate(data, num_fold):
 
     assert(len(train) == len(target))
 
-    kf = KFold(len(train), n_folds=num_fold, shuffle=True, random_state=None)
+    kf = StratifiedKFold(target.Target, n_folds=num_fold, shuffle=True, random_state=None)
+    # kf = KFold(len(train), n_folds=num_fold, shuffle=True, random_state=None)
 
     avg_score = 0.0
 
