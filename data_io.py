@@ -42,12 +42,17 @@ def read_solution():
     solution_path = get_paths()["solution_path"]
     return pd.read_csv(solution_path, index_col="SampleID")
 
-def save_model(model):
+def save_model(model, clf_key):
     out_path = get_paths()["model_path"]
+    out_path = '/'.join(out_path.split('/')[:-1]) + '/' + clf_key + '.pickle'
+    print 'saving model to ' + out_path
+
     pickle.dump(model, open(out_path, "w"))
 
-def load_model():
+def load_model(modelname=None):
     in_path = get_paths()["model_path"]
+    if modelname is not None:
+        in_path = '/'.join(in_path.split('/')[:-1]) + '/' + modelname + '.pickle'
     return pickle.load(open(in_path))
 
 def read_submission():

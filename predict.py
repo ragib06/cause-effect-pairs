@@ -2,6 +2,7 @@ import data_io
 import numpy as np
 import pickle
 import sys, getopt
+from classifier_factory import ClassifierFactory
 
 def historic():
     print("Calculating correlations")
@@ -17,10 +18,13 @@ def historic():
     scores = correlations * causal_relations
 
 def main():
+    cf = ClassifierFactory()
 
     filename = None
+    modelnames = ["basic_python_benchmark"]
+
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "f:")
+        opts, args = getopt.getopt(sys.argv[1:], "f:m:h")
     except getopt.GetoptError as err:
         print str(err)
         sys.exit(2)
@@ -28,19 +32,36 @@ def main():
     for o, a in opts:
         if o == "-f":
             filename = a
+        elif o == "-m":
+            if a == "all":
+                modelnames = []
+                for clf_key in cf.get_all_keys():
+                    modelnames.append(clf_key)
+            elif cf.is_valid_key(a):
+                modelnames = [a]
+        elif o == "-h":
+            print 'options:'
+            print "\t -m [classifier key | all]"
+            print "\t -f [filename]"
+            sys.exit(0)
+        else:
+            print "try help: python predict.py -h"
+            sys.exit(1)
 
-    print("Reading the test pairs")
+    print "Reading the test pairs"
     valid = data_io.read_test_pairs()
 
-    print("Loading the classifier")
-    classifier = data_io.load_model()
+    for modelname in modelnames:
+        print "Loading the classifier:", cf.get_classifier_name(modelname)
+        classifier = data_io.load_model(modelname)
 
-    print("Making predictions")
-    predictions = classifier.predict(valid)
-    predictions = predictions.flatten()
+        print "Making predictions"
+        predictions = classifier.predict(valid)
+        predictions = predictions.flatten()
 
-    print("Writing predictions to file")
-    data_io.write_submission(predictions, filename)
+        filename = modelname + '.csv'
+
+        data_io.write_submission(predictions, filename)
 
 if __name__=="__main__":
     main()

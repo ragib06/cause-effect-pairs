@@ -1,16 +1,17 @@
 import data_io
 import features as f
 import score as sc
-import numpy as np
-import pickle
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.feature_extraction.text import CountVectorizer
+from classifier_factory import ClassifierFactory
+
 from sklearn.pipeline import Pipeline
-from sklearn.svm import LinearSVC
-from sklearn.naive_bayes import MultinomialNB
+
 from sklearn.cross_validation import KFold
 from sklearn.cross_validation import StratifiedKFold
+
 import sys, getopt
+
+
+cf = ClassifierFactory()
 
 def feature_extractor():
     features = [
@@ -27,16 +28,16 @@ def feature_extractor():
     combined = f.FeatureMapper(features)
     return combined
 
-def get_pipeline():
+
+def get_pipeline(classifier_key):
     features = feature_extractor()
     steps = [("extract_features", features),
-             # ("classify", MultinomialNB())]
-             # ("classify", LinearSVC(loss='hinge'))]
-             ("classify", RandomForestRegressor(n_estimators=50, n_jobs=3, min_samples_split=10, random_state=1))]
+             ("classify", cf.get_classifier_obj(classifier_key))]
+
     return Pipeline(steps)
 
 
-def crossvalidate(data, num_fold):
+def crossvalidate(data, num_fold, clf_key):
     train = data['train']
     target = data['target']
 
@@ -51,7 +52,7 @@ def crossvalidate(data, num_fold):
 
     count = 1
     for train_index, test_index in kf:
-        classifier = get_pipeline()
+        classifier = get_pipeline(clf_key)
 
         text_fit = classifier.fit(train.iloc[train_index, :], target.iloc[train_index, :].Target)
         predictions = text_fit.predict(train.iloc[test_index, :])
@@ -70,16 +71,18 @@ def crossvalidate(data, num_fold):
 
 
 def main():
-
-    try:
-        opts, args = getopt.getopt(sys.argv[1:], "n:c:h")
-    except getopt.GetoptError as err:
-        print str(err)
-        sys.exit(2)
+    global cf
 
     numRows = None
     cv = False
     nfold = 10
+    clf_keys = ["rfg"]
+
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], "n:c:m:h")
+    except getopt.GetoptError as err:
+        print str(err)
+        sys.exit(2)
 
     clamp = lambda n, minn, maxn: max(min(maxn, n), minn)
     for o, a in opts:
@@ -88,13 +91,24 @@ def main():
         elif o == "-c":
             cv = True
             nfold = int(a)
+        elif o == "-m":
+            if a == "all":
+                clf_keys = []
+                for clf_key in cf.get_all_keys():
+                    clf_keys.append(clf_key)
+            elif cf.is_valid_key(a):
+                clf_keys = [a]
+            else:
+                print "ERROR: wrong classifier name: " + a
         elif o == "-h":
-            print "python train.py -n [number of rows]"
-            print "python train.py -c [number of folds]"
+            print 'options:'
+            print "\t -n [number of rows]"
+            print "\t -c [number of folds]"
+            print "\t -m [classifier key | all]"
+            sys.exit(0)
         else:
             print "try help: python train.py -h"
-            pass
-
+            sys.exit(2)
 
     print("Reading in the training data")
     train = data_io.read_train_pairs(numRows)
@@ -105,15 +119,17 @@ def main():
         data['train'] = train
         data['target'] = target
 
-        print "Initiating " + str(nfold) + " fold cross validation ..."
-        crossvalidate(data, nfold)
+        for clf_key in clf_keys:
+            print "Initiating " + str(nfold) + " fold cross validation with classifier " + cf.get_classifier_name(clf_key)
+            crossvalidate(data, nfold, clf_key)
     else:
-        print("Extracting features and training model")
-        classifier = get_pipeline()
-        classifier.fit(train, target.Target)
+        for clf_key in clf_keys:
+            print("Extracting features and training model")
+            classifier = get_pipeline(clf_key)
+            classifier.fit(train, target.Target)
 
-        print("Saving the classifier")
-        data_io.save_model(classifier)
+            print("Saving the classifier")
+            data_io.save_model(classifier, clf_key)
     
 if __name__=="__main__":
     main()
