@@ -1,9 +1,9 @@
 __author__ = 'ragib'
 
-from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor, GradientBoostingClassifier
+import numpy as np
+from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor, GradientBoostingRegressor, GradientBoostingClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.svm import LinearSVC
-from sklearn.naive_bayes import MultinomialNB
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.naive_bayes import GaussianNB
@@ -37,6 +37,10 @@ class ClassifierFactory:
             "gbc"   :   {
                 "name"  :   "GradientBoostingClassifier",
                 "obj"   :   GradientBoostingClassifier(subsample=0.5, n_estimators=10, random_state=0)
+            },
+            "gbr"   :   {
+                "name"  :   "GradientBoostingRegressor",
+                "obj"   :   GradientBoostingRegressor(loss='huber', n_estimators=5000, random_state=1, min_samples_split=2, min_samples_leaf=1, subsample=1.0, alpha=0.995355212043, max_depth=10, learning_rate=np.exp(-4.09679792914))
             },
             "knc"   :   {
                 "name"  :   "kNeighborsClassifier",
