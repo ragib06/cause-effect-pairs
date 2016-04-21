@@ -22,9 +22,10 @@ def main():
 
     filename = None
     modelnames = ["basic_python_benchmark"]
+    numRows = None
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "f:m:h")
+        opts, args = getopt.getopt(sys.argv[1:], "f:m:n:h")
     except getopt.GetoptError as err:
         print str(err)
         sys.exit(2)
@@ -32,6 +33,8 @@ def main():
     for o, a in opts:
         if o == "-f":
             filename = a
+        elif o == "-n":
+            numRows = int(a)
         elif o == "-m":
             if a == "all":
                 modelnames = []
@@ -49,14 +52,17 @@ def main():
             sys.exit(1)
 
     print "Reading the test pairs"
-    valid = data_io.read_test_pairs()
+    test = data_io.read_test_pairs(numRows)
+    testInfo = data_io.read_test_info(numRows)
+    test['A type'] = testInfo['A type']
+    test['B type'] = testInfo['B type']
 
     for modelname in modelnames:
         print "Loading the classifier:", cf.get_classifier_name(modelname)
         classifier = data_io.load_model(modelname)
 
         print "Making predictions"
-        predictions = classifier.predict(valid)
+        predictions = classifier.predict(test)
         predictions = predictions.flatten()
 
         filename = modelname + '.csv'

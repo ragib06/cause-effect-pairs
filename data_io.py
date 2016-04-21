@@ -4,6 +4,7 @@ import numpy as np
 import os
 import pandas as pd
 import pickle
+import features as f
 
 def get_paths():
     paths = json.loads(open("SETTINGS.json").read())
@@ -16,9 +17,14 @@ def parse_dataframe(df):
     df = df.applymap(parse_cell)
     return df
 
+def parse_dataframe_type(df):
+    parse_cell = lambda cell: f.get_feature_data_type(cell)
+    df = df.applymap(parse_cell)
+    return df
+
 def read_train_pairs(num_rows = None):
     train_path = get_paths()["train_pairs_path"]
-    return parse_dataframe(pd.read_csv(train_path, index_col="SampleID", nrows = num_rows))
+    return parse_dataframe(pd.read_csv(train_path, index_col="SampleID", nrows=num_rows))
 
 def read_train_target(num_rows = None):
     path = get_paths()["train_target_path"]
@@ -26,17 +32,17 @@ def read_train_target(num_rows = None):
     df = df.rename(columns = dict(zip(df.columns, ["Target", "Details"])))
     return df
 
-def read_train_info():
-    path = get_paths()["train_info_path"]
-    return pd.read_csv(path, index_col="SampleID")
+def read_train_info(num_rows = None):
+    info_path = get_paths()["train_info_path"]
+    return parse_dataframe_type(pd.read_csv(info_path, index_col="SampleID", nrows=num_rows))
 
-def read_test_pairs():
+def read_test_pairs(num_rows=None):
     valid_path = get_paths()["test_pairs_path"]
-    return parse_dataframe(pd.read_csv(valid_path, index_col="SampleID"))
+    return parse_dataframe(pd.read_csv(valid_path, index_col="SampleID", nrows=num_rows))
 
-def read_test_info():
+def read_test_info(num_rows=None):
     path = get_paths()["test_info_path"]
-    return pd.read_csv(path, index_col="SampleID")
+    return parse_dataframe_type(pd.read_csv(path, index_col="SampleID", nrows=num_rows))
 
 def read_solution():
     solution_path = get_paths()["solution_path"]

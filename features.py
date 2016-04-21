@@ -3,7 +3,194 @@ from sklearn.base import BaseEstimator
 from sklearn import metrics
 from sklearn.metrics.cluster import normalized_mutual_info_score
 from scipy.special import psi
-from scipy.stats.stats import pearsonr
+from scipy.stats.stats import pearsonr, chisquare, f_oneway, kruskal
+from scipy.spatial.distance import braycurtis, canberra, chebyshev, cityblock, correlation, cosine, euclidean, dice, hamming, jaccard, kulsinski, matching, rogerstanimoto, russellrao, sokalmichener, sokalsneath, sqeuclidean, yule
+from sklearn.metrics.cluster import adjusted_mutual_info_score, adjusted_rand_score, completeness_score, homogeneity_completeness_v_measure, homogeneity_score, mutual_info_score, normalized_mutual_info_score, v_measure_score
+from collections import defaultdict
+
+def enum(**enums):
+    return type('Enum', (), enums)
+
+FeatureDataType = enum(NUMERICAL=0, CATEGORICAL=1, BINARY=2)
+
+
+def get_feature_data_type(type_string):
+    if type_string == "Numerical":
+        return FeatureDataType.NUMERICAL
+    elif type_string == "Categorical":
+        return FeatureDataType.CATEGORICAL
+    else:
+        return FeatureDataType.BINARY
+
+
+def check_nn(Atype, Btype):
+    return Atype == FeatureDataType.NUMERICAL and Btype == FeatureDataType.NUMERICAL
+
+
+def nn_braycurtis(x, y, xt, yt):
+    if check_nn(xt, yt):
+        x /= np.linalg.norm(x)
+        y /= np.linalg.norm(y)
+        return braycurtis(x, y)
+    else:
+        return 0
+
+def nn_canberra(x, y, xt, yt):
+    if check_nn(xt, yt):
+        x /= np.linalg.norm(x)
+        y /= np.linalg.norm(y)
+        return canberra(x, y)
+    else:
+        return 0
+
+def nn_chebyshev(x, y, xt, yt):
+    if check_nn(xt, yt):
+        x /= np.linalg.norm(x)
+        y /= np.linalg.norm(y)
+        return chebyshev(x, y)
+    else:
+        return 0
+
+def nn_cityblock(x, y, xt, yt):
+    if check_nn(xt, yt):
+        x /= np.linalg.norm(x)
+        y /= np.linalg.norm(y)
+        return cityblock(x, y)
+    else:
+        return 0
+
+def nn_correlation(x, y, xt, yt):
+    if check_nn(xt, yt):
+        x /= np.linalg.norm(x)
+        y /= np.linalg.norm(y)
+        return correlation(x, y)
+    else:
+        return 0
+
+def nn_cosine(x, y, xt, yt):
+    if check_nn(xt, yt):
+        x /= np.linalg.norm(x)
+        y /= np.linalg.norm(y)
+        return cosine(x, y)
+    else:
+        return 0
+
+def nn_euclidean(x, y, xt, yt):
+    if check_nn(xt, yt):
+        x /= np.linalg.norm(x)
+        y /= np.linalg.norm(y)
+        return euclidean(x, y)
+    else:
+        return 0
+
+
+NN_FEATURES = {
+    nn_braycurtis,
+    nn_canberra,
+    nn_chebyshev,
+    nn_cityblock,
+    nn_correlation,
+    nn_cosine,
+    nn_euclidean
+}
+
+
+
+def check_bb(Atype, Btype):
+    return Atype == FeatureDataType.BINARY and Btype == FeatureDataType.BINARY
+
+
+def bb_dice(x, y, xt, yt):
+    if check_bb(xt, yt):
+        return dice(x, y)
+    else:
+        return 0
+
+def bb_hamming(x, y, xt, yt):
+    if check_bb(xt, yt):
+        return hamming(x, y)
+    else:
+        return 0
+
+def bb_jaccard(x, y, xt, yt):
+    if check_bb(xt, yt):
+        return jaccard(x, y)
+    else:
+        return 0
+
+def bb_kulsinski(x, y, xt, yt):
+    if check_bb(xt, yt):
+        return kulsinski(x, y)
+    else:
+        return 0
+
+def bb_matching(x, y, xt, yt):
+    if check_bb(xt, yt):
+        return matching(x, y)
+    else:
+        return 0
+
+def bb_rogerstanimoto(x, y, xt, yt):
+    if check_bb(xt, yt):
+        return rogerstanimoto(x, y)
+    else:
+        return 0
+
+def bb_russellrao(x, y, xt, yt):
+    if check_bb(xt, yt):
+        return russellrao(x, y)
+    else:
+        return 0
+
+def bb_sokalmichener(x, y, xt, yt):
+    if check_bb(xt, yt):
+        return sokalmichener(x, y)
+    else:
+        return 0
+
+def bb_sokalsneath(x, y, xt, yt):
+    if check_bb(xt, yt):
+        return sokalsneath(x, y)
+    else:
+        return 0
+
+def bb_sqeuclidean(x, y, xt, yt):
+    if check_bb(xt, yt):
+        return sqeuclidean(x, y)
+    else:
+        return 0
+
+def bb_yule(x, y, xt, yt):
+    if check_bb(xt, yt):
+        return yule(x, y)
+    else:
+        return 0
+
+BB_FEATURES = {
+    bb_dice,
+    bb_hamming,
+    bb_jaccard,
+    bb_kulsinski,
+    bb_matching,
+    bb_rogerstanimoto,
+    bb_russellrao,
+    bb_sokalmichener,
+    bb_sokalsneath,
+    bb_sqeuclidean,
+    bb_yule
+}
+
+CC_FEATURES = {
+    adjusted_mutual_info_score,
+    adjusted_rand_score,
+    completeness_score,
+    homogeneity_completeness_v_measure,
+    homogeneity_score,
+    mutual_info_score,
+    normalized_mutual_info_score,
+    v_measure_score
+}
+
 
 class FeatureMapper:
     def __init__(self, features):
@@ -49,26 +236,72 @@ def normalized_entropy(x):
     x = (x - np.mean(x)) / np.std(x)
     x = np.sort(x)
     
-    hx = 0.0;
+    hx = 0.0
     for i in range(len(x)-1):
-        delta = x[i+1] - x[i];
+        delta = x[i+1] - x[i]
         if delta != 0:
-            hx += np.log(np.abs(delta));
-    hx = hx / (len(x) - 1) + psi(len(x)) - psi(1);
+            hx += np.log(np.abs(delta))
+    hx = hx / (len(x) - 1) + psi(len(x)) - psi(1)
 
     return hx
+
+
+def chi_square(x, y):
+    cs = chisquare(x - min(x) + 1, y - min(y) + 1)
+    # print cs
+    return cs
+
+
+def chi_square_stat(x, y):
+    return chi_square(x, y)[0]
+
+
+def anova(x, y):
+    grouped = defaultdict(list)
+    [grouped[x_val].append(y_val) for x_val, y_val in zip(x, y)]
+    grouped_values = grouped.values()
+    if len(grouped_values) < 2:
+        return (0, 0, 0, 0)
+    f_oneway_res = list(f_oneway(*grouped_values))
+    try:
+        kruskal_res = list(kruskal(*grouped_values))
+    except ValueError:  # when all numbers are identical
+        kruskal_res = [0, 0]
+    return (f_oneway_res + kruskal_res)
+
+
+def anova_f_oneway_stat(x, y):
+    afos = anova(x, y)
+    return afos[0]
+
+
+def anova_f_oneway_pvalue(x, y):
+    return anova(x, y)[1]
+
+
+def anova_kruskal_stat(x, y):
+    return anova(x, y)[2]
+
+
+def anova_kruskal_pvalue(x, y):
+    return anova(x, y)[3]
+
 
 def normalized_mutual_information(x, y):
     return metrics.mutual_info_score(x, y)
 
+
 def entropy_difference(x, y):
     return normalized_entropy(x) - normalized_entropy(y)
+
 
 def correlation(x, y):
     return pearsonr(x, y)[0]
 
+
 def correlation_magnitude(x, y):
     return abs(correlation(x, y))
+
 
 class SimpleTransform(BaseEstimator):
     def __init__(self, transformer=identity):
@@ -82,6 +315,7 @@ class SimpleTransform(BaseEstimator):
 
     def transform(self, X, y=None):
         return np.array([self.transformer(x) for x in X], ndmin=2).T
+
 
 class MultiColumnTransform(BaseEstimator):
     def __init__(self, transformer):

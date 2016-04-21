@@ -23,8 +23,23 @@ def feature_extractor():
                 ('Pearson R', ['A','B'], f.MultiColumnTransform(f.correlation)),
                 ('Pearson R Magnitude', ['A','B'], f.MultiColumnTransform(f.correlation_magnitude)),
                 ('Entropy Difference', ['A','B'], f.MultiColumnTransform(f.entropy_difference)),
-                ('Mutual Information', ['A', 'B'], f.MultiColumnTransform(transformer=f.normalized_mutual_information))
+                ('Mutual Information', ['A', 'B'], f.MultiColumnTransform(transformer=f.normalized_mutual_information)),
+                ('Chi-square stats stats', ['A','B'], f.MultiColumnTransform(transformer=f.chi_square_stat)),
+                # ('ANOVA f_oneway stats stats', ['A','B'], f.MultiColumnTransform(transformer=f.anova_f_oneway_stat)),
+                ('ANOVA kruskal stats stats', ['A','B'], f.MultiColumnTransform(transformer=f.anova_kruskal_stat))
+                # ('NN_Feature1', ['A', 'B', 'A type', 'B type'], f.MultiColumnTransform(transformer=f.nn_braycurtis))
                 ]
+
+    cnt = 0
+    for feat in f.NN_FEATURES:
+        features.append(('NN_Feature' + str(cnt), ['A', 'B', 'A type', 'B type'], f.MultiColumnTransform(transformer=feat)))
+        cnt += 1
+
+    cnt = 0
+    for feat in f.BB_FEATURES:
+        features.append(('BB_Feature' + str(cnt), ['A', 'B', 'A type', 'B type'], f.MultiColumnTransform(transformer=feat)))
+        cnt += 1
+
     combined = f.FeatureMapper(features)
     return combined
 
@@ -112,6 +127,9 @@ def main():
 
     print("Reading in the training data")
     train = data_io.read_train_pairs(numRows)
+    trainInfo = data_io.read_train_info(numRows)
+    train['A type'] = trainInfo['A type']
+    train['B type'] = trainInfo['B type']
     target = data_io.read_train_target(numRows)
 
     if cv:
