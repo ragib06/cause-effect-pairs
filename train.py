@@ -25,14 +25,17 @@ def feature_extractor():
                 ('Entropy Difference', ['A','B'], f.MultiColumnTransform(f.entropy_difference)),
                 ('Mutual Information', ['A', 'B'], f.MultiColumnTransform(transformer=f.normalized_mutual_information)),
                 ('Chi-square stats stats', ['A','B'], f.MultiColumnTransform(transformer=f.chi_square_stat)),
-                # ('ANOVA f_oneway stats stats', ['A','B'], f.MultiColumnTransform(transformer=f.anova_f_oneway_stat)),
                 ('ANOVA kruskal stats stats', ['A','B'], f.MultiColumnTransform(transformer=f.anova_kruskal_stat))
-                # ('NN_Feature1', ['A', 'B', 'A type', 'B type'], f.MultiColumnTransform(transformer=f.nn_braycurtis))
                 ]
 
     cnt = 0
     for feat in f.NN_FEATURES:
         features.append(('NN_Feature' + str(cnt), ['A', 'B', 'A type', 'B type'], f.MultiColumnTransform(transformer=feat)))
+        cnt += 1
+
+    cnt = 0
+    for feat in f.CC_FEATURES:
+        features.append(('CC_Feature' + str(cnt), ['A', 'B', 'A type', 'B type'], f.MultiColumnTransform(transformer=feat)))
         cnt += 1
 
     cnt = 0

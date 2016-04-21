@@ -7,6 +7,7 @@ from scipy.stats.stats import pearsonr, chisquare, f_oneway, kruskal
 from scipy.spatial.distance import braycurtis, canberra, chebyshev, cityblock, correlation, cosine, euclidean, dice, hamming, jaccard, kulsinski, matching, rogerstanimoto, russellrao, sokalmichener, sokalsneath, sqeuclidean, yule
 from sklearn.metrics.cluster import adjusted_mutual_info_score, adjusted_rand_score, completeness_score, homogeneity_completeness_v_measure, homogeneity_score, mutual_info_score, normalized_mutual_info_score, v_measure_score
 from collections import defaultdict
+import math
 
 def enum(**enums):
     return type('Enum', (), enums)
@@ -82,6 +83,31 @@ def nn_euclidean(x, y, xt, yt):
         return euclidean(x, y)
     else:
         return 0
+
+def anova(x, y):
+    grouped = defaultdict(list)
+    [grouped[x_val].append(y_val) for x_val, y_val in zip(x, y)]
+    grouped_values = grouped.values()
+    if len(grouped_values) < 2:
+        return (0, 0, 0, 0)
+    f_oneway_res = list(f_oneway(*grouped_values))
+    try:
+        kruskal_res = list(kruskal(*grouped_values))
+    except ValueError:  # when all numbers are identical
+        kruskal_res = [0, 0]
+    return (f_oneway_res + kruskal_res)
+
+
+def anova_f_oneway_stat(x, y, xt, yt):
+    if check_nn(xt, yt):
+        afos = anova(x, y)
+        return afos[0]
+    else:
+        return 0
+
+
+def anova_kruskal_stat(x, y):
+    return anova(x, y)[2]
 
 
 NN_FEATURES = {
@@ -180,15 +206,126 @@ BB_FEATURES = {
     bb_yule
 }
 
+
+def check_cc(Atype, Btype):
+    return Atype == FeatureDataType.CATEGORICAL and Btype == FeatureDataType.CATEGORICAL
+
+def check_cn(Atype, Btype):
+    return Atype == FeatureDataType.CATEGORICAL and Btype == FeatureDataType.NUMERICAL
+
+def check_nc(Atype, Btype):
+    return Atype == FeatureDataType.NUMERICAL and Btype == FeatureDataType.CATEGORICAL
+
+def descretize(a, numBins=10):
+    chunk = int(math.ceil(max(a)/10))
+    return np.digitize(a, range(0, int(math.ceil(max(a))), chunk))
+
+def cc_adjusted_mutual_info_score(x, y, xt, yt):
+    if check_cc(xt, yt):
+        return adjusted_mutual_info_score(x, y)
+    elif check_cn(xt, yt):
+        y = descretize(y)
+        return adjusted_mutual_info_score(x, y)
+    elif check_nc(xt, yt):
+        x = descretize(x)
+        return adjusted_mutual_info_score(x, y)
+    else:
+        return 0
+
+def cc_adjusted_rand_score(x, y, xt, yt):
+    if check_cc(xt, yt):
+        return adjusted_rand_score(x, y)
+    elif check_cn(xt, yt):
+        y = descretize(y)
+        return adjusted_rand_score(x, y)
+    elif check_nc(xt, yt):
+        x = descretize(x)
+        return adjusted_rand_score(x, y)
+    else:
+        return 0
+
+def cc_completeness_score(x, y, xt, yt):
+    if check_cc(xt, yt):
+        return completeness_score(x, y)
+    elif check_cn(xt, yt):
+        y = descretize(y)
+        return completeness_score(x, y)
+    elif check_nc(xt, yt):
+        x = descretize(x)
+        return completeness_score(x, y)
+    else:
+        return 0
+
+def cc_homogeneity_completeness_v_measure(x, y, xt, yt):
+    if check_cc(xt, yt):
+        return homogeneity_completeness_v_measure(x, y)
+    elif check_cn(xt, yt):
+        y = descretize(y)
+        return homogeneity_completeness_v_measure(x, y)
+    elif check_nc(xt, yt):
+        x = descretize(x)
+        return homogeneity_completeness_v_measure(x, y)
+    else:
+        return 0
+
+def cc_homogeneity_score(x, y, xt, yt):
+    if check_cc(xt, yt):
+        return homogeneity_score(x, y)
+    elif check_cn(xt, yt):
+        y = descretize(y)
+        return homogeneity_score(x, y)
+    elif check_nc(xt, yt):
+        x = descretize(x)
+        return homogeneity_score(x, y)
+    else:
+        return 0
+
+def cc_mutual_info_score(x, y, xt, yt):
+    if check_cc(xt, yt):
+        return mutual_info_score(x, y)
+    elif check_cn(xt, yt):
+        y = descretize(y)
+        return mutual_info_score(x, y)
+    elif check_nc(xt, yt):
+        x = descretize(x)
+        return mutual_info_score(x, y)
+    else:
+        return 0
+
+def cc_normalized_mutual_info_score(x, y, xt, yt):
+    if check_cc(xt, yt):
+        return normalized_mutual_info_score(x, y)
+    elif check_cn(xt, yt):
+        y = descretize(y)
+        return normalized_mutual_info_score(x, y)
+    elif check_nc(xt, yt):
+        x = descretize(x)
+        return normalized_mutual_info_score(x, y)
+    else:
+        return 0
+
+def cc_v_measure_score(x, y, xt, yt):
+    if check_cc(xt, yt):
+        return v_measure_score(x, y)
+    elif check_cn(xt, yt):
+        y = descretize(y)
+        return v_measure_score(x, y)
+    elif check_nc(xt, yt):
+        x = descretize(x)
+        return v_measure_score(x, y)
+    else:
+        return 0
+
+
 CC_FEATURES = {
-    adjusted_mutual_info_score,
-    adjusted_rand_score,
-    completeness_score,
-    homogeneity_completeness_v_measure,
-    homogeneity_score,
-    mutual_info_score,
-    normalized_mutual_info_score,
-    v_measure_score
+    cc_adjusted_mutual_info_score,
+    cc_adjusted_rand_score,
+    cc_completeness_score,
+    # cc_homogeneity_completeness_v_measure,
+    cc_homogeneity_score,
+    cc_mutual_info_score,
+    cc_normalized_mutual_info_score,
+    cc_v_measure_score
 }
 
 
@@ -254,37 +391,6 @@ def chi_square(x, y):
 
 def chi_square_stat(x, y):
     return chi_square(x, y)[0]
-
-
-def anova(x, y):
-    grouped = defaultdict(list)
-    [grouped[x_val].append(y_val) for x_val, y_val in zip(x, y)]
-    grouped_values = grouped.values()
-    if len(grouped_values) < 2:
-        return (0, 0, 0, 0)
-    f_oneway_res = list(f_oneway(*grouped_values))
-    try:
-        kruskal_res = list(kruskal(*grouped_values))
-    except ValueError:  # when all numbers are identical
-        kruskal_res = [0, 0]
-    return (f_oneway_res + kruskal_res)
-
-
-def anova_f_oneway_stat(x, y):
-    afos = anova(x, y)
-    return afos[0]
-
-
-def anova_f_oneway_pvalue(x, y):
-    return anova(x, y)[1]
-
-
-def anova_kruskal_stat(x, y):
-    return anova(x, y)[2]
-
-
-def anova_kruskal_pvalue(x, y):
-    return anova(x, y)[3]
 
 
 def normalized_mutual_information(x, y):
