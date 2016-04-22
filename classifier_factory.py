@@ -9,6 +9,8 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.naive_bayes import GaussianNB
 from sklearn.linear_model import SGDClassifier
 from sklearn.ensemble import AdaBoostClassifier,BaggingClassifier
+from nltk.classify import ClassifierI
+from nltk.probability import FreqDist
 
 class MaxVoteClassifier(ClassifierI):
     def __init__(self, *classifiers):
