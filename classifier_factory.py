@@ -7,6 +7,20 @@ from sklearn.svm import LinearSVC
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.naive_bayes import GaussianNB
+from sklearn.linear_model import SGDClassifier
+from sklearn.ensemble import AdaBoostClassifier,BaggingClassifier
+
+class MaxVoteClassifier(ClassifierI):
+    def __init__(self, *classifiers):
+        self._classifiers = classifiers
+        self._labels = sorted(set(itertools.chain(*[c.labels() for c in classifiers])))
+    def labels(self):
+        return self._labels
+    def classify(self, feats):
+        counts = FreqDist()
+        for classifier in self._classifiers:
+            counts[classifier.classify(feats)]+=1
+        return counts.max()
 
 
 class ClassifierFactory:
@@ -46,9 +60,21 @@ class ClassifierFactory:
                 "name"  :   "kNeighborsClassifier",
                 "obj"   :   KNeighborsClassifier()
             },
-            "gnb"   :   {
-                "name"  :   "GaussianNB",
-                "obj"   :   GaussianNB()
+            "sgd"   :   {
+                "name"  :   "SGDClassifier",
+                "obj"   :   SGDClassifier(class_weight='balanced')
+            },
+            "boost"   :   {
+                "name"  :   "AdaBoostClassifier",
+                "obj"   :   AdaBoostClassifier(n_estimators=100)
+            },
+            "bagg"   :   {
+                "name"  :   "Bagging",
+                "obj"   :   BaggingClassifier()
+            },
+            "vote"   :   {
+                "name"  :   "voting",
+                "obj"   :   MaxVoteClassifier(RandomForestClassifier(random_state=0),SGDClassifier(class_weight='balanced'))
             },
         }
 
