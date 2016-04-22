@@ -1,6 +1,7 @@
 __author__ = 'ragib'
 
 import numpy as np
+import itertools
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor, GradientBoostingRegressor, GradientBoostingClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.svm import LinearSVC
@@ -12,7 +13,7 @@ from sklearn.ensemble import AdaBoostClassifier,BaggingClassifier
 from nltk.classify import ClassifierI
 from nltk.probability import FreqDist
 
-class MaxVoteClassifier(ClassifierI):
+'''class MaxVoteClassifier(ClassifierI):
     def __init__(self, *classifiers):
         self._classifiers = classifiers
         self._labels = sorted(set(itertools.chain(*[c.labels() for c in classifiers])))
@@ -23,7 +24,7 @@ class MaxVoteClassifier(ClassifierI):
         for classifier in self._classifiers:
             counts[classifier.classify(feats)]+=1
         return counts.max()
-
+'''
 
 class ClassifierFactory:
 
@@ -74,10 +75,10 @@ class ClassifierFactory:
                 "name"  :   "Bagging",
                 "obj"   :   BaggingClassifier()
             },
-            "vote"   :   {
+'''            "vote"   :   {
                 "name"  :   "voting",
                 "obj"   :   MaxVoteClassifier(RandomForestClassifier(random_state=0),SGDClassifier(class_weight='balanced'))
-            },
+            },'''
         }
 
     def get_classifier(self, key):
