@@ -9,6 +9,7 @@ from sklearn.cross_validation import KFold
 from sklearn.cross_validation import StratifiedKFold
 
 import sys, getopt
+import time
 
 
 cf = ClassifierFactory()
@@ -70,6 +71,7 @@ def crossvalidate(data, num_fold, clf_key):
 
     count = 1
     for train_index, test_index in kf:
+        start_cv = time.clock()
         classifier = get_pipeline(clf_key)
 
         text_fit = classifier.fit(train.iloc[train_index, :], target.iloc[train_index, :].Target)
@@ -77,7 +79,9 @@ def crossvalidate(data, num_fold, clf_key):
         predictions = predictions.flatten()
 
         score = sc.bidirectional_auc(target.iloc[test_index, :].Target, predictions)
-        print '### Score(' + str(count) + '): ', score
+
+        end_cv = time.clock()
+        print '### Score(' + str(count) + '): ', score, '[time: ' + str(round(end_cv - start_cv, 2)) + ']'
 
         avg_score += score
         count += 1
@@ -90,6 +94,8 @@ def crossvalidate(data, num_fold, clf_key):
 
 def main():
     global cf
+
+    start = time.clock()
 
     numRows = None
     cv = False
@@ -151,6 +157,10 @@ def main():
 
             print("Saving the classifier")
             data_io.save_model(classifier, clf_key)
+
+    end = time.clock()
+
+    print 'Execution time:', round(end - start, 2)
     
 if __name__=="__main__":
     main()

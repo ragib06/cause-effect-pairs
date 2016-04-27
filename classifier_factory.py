@@ -5,6 +5,7 @@ import itertools
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor, GradientBoostingRegressor, GradientBoostingClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.svm import LinearSVC
+from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.naive_bayes import GaussianNB
@@ -35,25 +36,9 @@ class ClassifierFactory:
                 "name"  :   "LogisticRegression",
                 "obj"   :   LogisticRegression(random_state=0)
             },
-            "lsvc"  :   {
-                "name"  :   "LinearSVC",
-                "obj"   :   LinearSVC(loss='hinge')
-            },
-            "dtc"    :   {
-                "name"  :   "DecisionTreeClassifier",
-                "obj"   :   DecisionTreeClassifier(random_state=0)
-            },
-            "rfc"   :   {
-                "name"  :   "RandomForestClassifier",
-                "obj"   :   RandomForestClassifier(random_state=0)
-            },
             "rfg"   :   {
                 "name"  :   "RandomForestRegressor",
                 "obj"   :   RandomForestRegressor(n_estimators=50, n_jobs=3, min_samples_split=10, random_state=1)
-            },
-            "gbc"   :   {
-                "name"  :   "GradientBoostingClassifier",
-                "obj"   :   GradientBoostingClassifier(subsample=0.5, n_estimators=10, random_state=0)
             },
             "gbr"   :   {
                 "name"  :   "GradientBoostingRegressor",
@@ -63,10 +48,6 @@ class ClassifierFactory:
                 "name"  :   "kNeighborsClassifier",
                 "obj"   :   KNeighborsClassifier()
             },
-            "sgd"   :   {
-                "name"  :   "SGDClassifier",
-                "obj"   :   SGDClassifier(class_weight='balanced')
-            },
             "boost"   :   {
                 "name"  :   "AdaBoostClassifier",
                 "obj"   :   AdaBoostClassifier(n_estimators=100)
@@ -74,6 +55,34 @@ class ClassifierFactory:
             "bagg"   :   {
                 "name"  :   "Bagging",
                 "obj"   :   BaggingClassifier()
+            },
+            "lsvc"  :   {
+                "name"  :   "LinearSVC",
+                "obj"   :   LinearSVC(loss='hinge', class_weight='balanced')
+            },
+            "psvc"  :   {
+                "name"  :   "PolynomialSVC",
+                "obj"   :   SVC(kernel='poly', degree=3, class_weight='balanced')
+            },
+            "rsvc"  :   {
+                "name"  :   "RBFSVC",
+                "obj"   :   SVC(kernel='rbf', gamma=0.7, class_weight='balanced')
+            },
+            "dtc"    :   {
+                "name"  :   "DecisionTreeClassifier",
+                "obj"   :   DecisionTreeClassifier(random_state=0, class_weight='balanced')
+            },
+            "rfc"   :   {
+                "name"  :   "RandomForestClassifier",
+                "obj"   :   RandomForestClassifier(random_state=0, class_weight='balanced')
+            },
+            "gbc"   :   {
+                "name"  :   "GradientBoostingClassifier",
+                "obj"   :   GradientBoostingClassifier(subsample=0.5, n_estimators=10, random_state=0, class_weight='balanced')
+            },
+            "sgd"   :   {
+                "name"  :   "SGDClassifier",
+                "obj"   :   SGDClassifier(class_weight='balanced')
             }
         }
 
