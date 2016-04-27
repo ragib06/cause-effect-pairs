@@ -78,7 +78,7 @@ class ClassifierFactory:
             },
             "gbc"   :   {
                 "name"  :   "GradientBoostingClassifier",
-                "obj"   :   GradientBoostingClassifier(subsample=0.5, n_estimators=10, random_state=0, class_weight='balanced')
+                "obj"   :   GradientBoostingClassifier(subsample=0.5, n_estimators=10, random_state=0)
             },
             "sgd"   :   {
                 "name"  :   "SGDClassifier",
