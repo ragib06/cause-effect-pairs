@@ -74,11 +74,7 @@ class ClassifierFactory:
             "bagg"   :   {
                 "name"  :   "Bagging",
                 "obj"   :   BaggingClassifier()
-            },
-'''            "vote"   :   {
-                "name"  :   "voting",
-                "obj"   :   MaxVoteClassifier(RandomForestClassifier(random_state=0),SGDClassifier(class_weight='balanced'))
-            },'''
+            }
         }
 
     def get_classifier(self, key):

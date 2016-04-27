@@ -8,6 +8,8 @@ from scipy.spatial.distance import braycurtis, canberra, chebyshev, cityblock, c
 from sklearn.metrics.cluster import adjusted_mutual_info_score, adjusted_rand_score, completeness_score, homogeneity_completeness_v_measure, homogeneity_score, mutual_info_score, normalized_mutual_info_score, v_measure_score
 from collections import defaultdict
 import math
+from scipy.stats import entropy
+from numpy.linalg import norm
 
 def enum(**enums):
     return type('Enum', (), enums)
@@ -110,6 +112,16 @@ def anova_kruskal_stat(x, y):
     return anova(x, y)[2]
 
 
+'''' def nn_JSD(x, y, xt, yt):
+   if check_nn(xt,yt):
+     _P = P / norm(P, ord=1)
+     _Q = Q / norm(Q, ord=1)
+     _M = 0.5 * (_P + _Q)
+     return 0.5 * (entropy(_P, _M) + entropy(_Q, _M))
+   else:
+     return 0 '''
+
+
 NN_FEATURES = {
     nn_braycurtis,
     nn_canberra,
@@ -117,14 +129,11 @@ NN_FEATURES = {
     nn_cityblock,
     nn_correlation,
     nn_cosine,
-    nn_euclidean
+    nn_euclidean,
 }
-
-
 
 def check_bb(Atype, Btype):
     return Atype == FeatureDataType.BINARY and Btype == FeatureDataType.BINARY
-
 
 def bb_dice(x, y, xt, yt):
     if check_bb(xt, yt):
