@@ -32,10 +32,6 @@ class ClassifierFactory:
     def __init__(self):
 
         self.factoryMap = {
-            "lr"    :   {
-                "name"  :   "LogisticRegression",
-                "obj"   :   LogisticRegression(random_state=0)
-            },
             "rfg"   :   {
                 "name"  :   "RandomForestRegressor",
                 "obj"   :   RandomForestRegressor(n_estimators=50, n_jobs=3, min_samples_split=10, random_state=1)
@@ -60,14 +56,6 @@ class ClassifierFactory:
                 "name"  :   "LinearSVC",
                 "obj"   :   LinearSVC(loss='hinge', class_weight='balanced')
             },
-            "psvc"  :   {
-                "name"  :   "PolynomialSVC",
-                "obj"   :   SVC(kernel='poly', degree=3, class_weight='balanced')
-            },
-            "rsvc"  :   {
-                "name"  :   "RBFSVC",
-                "obj"   :   SVC(kernel='rbf', gamma=0.7, class_weight='balanced')
-            },
             "dtc"    :   {
                 "name"  :   "DecisionTreeClassifier",
                 "obj"   :   DecisionTreeClassifier(random_state=0, class_weight='balanced')
@@ -79,10 +67,6 @@ class ClassifierFactory:
             "gbc"   :   {
                 "name"  :   "GradientBoostingClassifier",
                 "obj"   :   GradientBoostingClassifier(subsample=0.5, n_estimators=10, random_state=0)
-            },
-            "sgd"   :   {
-                "name"  :   "SGDClassifier",
-                "obj"   :   SGDClassifier(class_weight='balanced')
             }
         }
 

@@ -151,12 +151,15 @@ def main():
             crossvalidate(data, nfold, clf_key)
     else:
         for clf_key in clf_keys:
+            start_train = time.clock()
             print("Extracting features and training model")
             classifier = get_pipeline(clf_key)
             classifier.fit(train, target.Target)
 
             print("Saving the classifier")
             data_io.save_model(classifier, clf_key)
+            end_train = time.clock()
+            print 'time taken:', end_train - start_train, 'seconds'
 
     end = time.clock()
 
